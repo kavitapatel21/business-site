@@ -27,7 +27,7 @@
   </div>
 </footer>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script> 
 <!-- owl carousel js --> 
 <script src="<?php echo get_stylesheet_directory_uri(); ?>/assets/js/owl.carousel.min.js"></script> 
@@ -36,9 +36,15 @@
 
 <!-- scrollIt js --> 
 <script src="<?php echo get_stylesheet_directory_uri(); ?>/assets/js/scrollIt.min.js"></script> 
-
 <!-- isotope.pkgd.min js --> 
 <script src="<?php echo get_stylesheet_directory_uri(); ?>/assets/js/isotope.pkgd.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script> 
+ 
+<!--<script>
+$(document).ready(function(){       
+    }); 
+</script>-->
 <script>
   $(window).on("scroll",function () {
 

@@ -5,13 +5,37 @@
  */
 get_header();
 ?>
-<!-- Banner Image -->
+
 <?php
+
 //get current page id 
 global $wp_query;
 $postID = $wp_query->post->ID;
 //echo $postID; ?>
 
+<!-- pop up -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <!--         <h4 class="modal-title">Modal Header</h4> -->
+      </div>
+      <div class="modal-body text-center">
+        <h1>Full screen Transparent Bootstrap Modal</h1>
+        <p>FEEL FRREE TO GET YOUR MODAL CODE HERE FOLKS.</p>
+        <a class="pre-order-btn" href="#">GET THE MODAL CODE</a>
+      </div>
+      <div class="modal-footer">
+        <!--         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Banner Image -->
 <?php
           $args = array( 'post_type' => 'banner',
           'post_status' => 'publish',
@@ -279,8 +303,14 @@ $args = array( 'post_type' => 'our_team',
       </div>
     </div>
   </div>
+
+  <div class="container">
+<?php  echo do_shortcode( '[contact-form-7 id="69" title="Contact form 1"]' ); ?>
+  </div>
 </div>
 <!-- End Contact -->
+
+
 <?php
 get_footer();
 ?>

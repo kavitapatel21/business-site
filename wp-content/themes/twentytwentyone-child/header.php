@@ -21,7 +21,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
 <title>Elegant Template By W3 Template</title>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js">
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 <link rel="stylesheet" type="text/css" href="<?php echo get_stylesheet_directory_uri(); ?>/assets/style.css"/>
 <link rel="stylesheet" type="text/css" href="<?php echo get_stylesheet_directory_uri(); ?>/assets/css/jquery.fancybox.min.css"/>
@@ -44,7 +44,8 @@
         <?php if ( function_exists( 'the_custom_logo' ) ) {
     		the_custom_logo();
 			}?>
-			 <img src="http://localhost/business/wp-content/uploads/2022/03/logo-black.png" alt="logo" class="logo-1 sticky-logo"></a>
+			<!-- <img src="http://localhost/business/wp-content/uploads/2022/03/logo-black.png" alt="logo" class="logo-1 sticky-logo">-->
+			</a>
 
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"> <span class="fas fa-bars"></span> </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
