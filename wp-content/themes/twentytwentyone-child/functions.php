@@ -105,3 +105,21 @@ $.cookie('the_cookie', '', { expires: date ,path :'/' });  // expires after 30 s
 <?php
 }
 ?>
+<?php
+function title_filter($where, &$wp_query){
+    global $wpdb;
+
+    if($search_term = $wp_query->get( 's' )){
+        /*using the esc_like() in here instead of other esc_sql()*/
+        $search_term = $wpdb->esc_like($search_term);
+        $search_term = ' \'%' . $search_term . '%\'';
+        $where .= ' AND ' . $wpdb->posts . '.post_title LIKE '.$search_term;
+    }
+
+    return $where;
+}
+add_filter( 'posts_where', 'title_filter', 10, 2 );
+
+remove_filter( 'posts_where', 'title_filter', 10 );
+return $wp_query;
+?>

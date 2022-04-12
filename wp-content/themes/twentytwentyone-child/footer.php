@@ -40,7 +40,15 @@
 <script src="<?php echo get_stylesheet_directory_uri(); ?>/assets/js/isotope.pkgd.min.js"></script> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script> 
- 
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+ <script>
+ jQuery(document).ready(function ($) {
+
+$('#my-first-table').DataTable();
+
+});
+ </script>
 <!--<script>
 $(document).ready(function(){       
     }); 
