@@ -30,6 +30,7 @@
 	   </header><!-- .page-header -->
 
 				   <?php
+				   
 				   // Start the Loop.
 				   while ( have_posts() ) : the_post();
 				   ?>
@@ -42,9 +43,7 @@
                     </div>
                     <h4 style="margin-top: 1rem;font-size: 25px;font-weight:700"><?php the_title(); ?></h4>
                     <p><?php the_content(); ?></p>
-					 <?php $date = get_field('date');
-                   $date2 = date("j F, Y", strtotime($date)); ?>
-                    <h5><?php  echo $date2; ?></h5>   
+                    <h5><?php echo get_the_date( 'Y-m-d' ); ?></h5>   
                 </div>
             </div>
         </div>

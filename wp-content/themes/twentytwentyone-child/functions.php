@@ -70,6 +70,7 @@ add_filter( 'wpcf7_posted_data', 'save_posted_data' );
 <?php
 add_action( 'init', 'my_setcookie' );
 function my_setcookie() {
+  //pop up model shows only once a day
 //setcookie( 'my-name', '1', time() + 3600, COOKIEPATH, COOKIE_DOMAIN   );
 }
 /**add_action( 'wp_head', 'my_getcookie' );
@@ -105,21 +106,44 @@ $.cookie('the_cookie', '', { expires: date ,path :'/' });  // expires after 30 s
 <?php
 }
 ?>
+
 <?php
-function title_filter($where, &$wp_query){
-    global $wpdb;
+//fiter post between two dates
+add_action('wp_ajax_myfilter', 'misha_filter_function'); // wp_ajax_{ACTION HERE} 
+add_action('wp_ajax_nopriv_myfilter', 'misha_filter_function');
 
-    if($search_term = $wp_query->get( 's' )){
-        /*using the esc_like() in here instead of other esc_sql()*/
-        $search_term = $wpdb->esc_like($search_term);
-        $search_term = ' \'%' . $search_term . '%\'';
-        $where .= ' AND ' . $wpdb->posts . '.post_title LIKE '.$search_term;
-    }
+function misha_filter_function(){
 
-    return $where;
+	if( isset( $_POST['startdate'] ) && isset( $_POST['enddate'] ) ) {
+    $start=$_POST['startdate'];
+    $end=$_POST['enddate'];
+   // echo $start;
+    $args = array( 'post_type' => 'custom_post',
+  'post_status' => 'publish',
+  'posts_per_page' => -1,
+  'order'    => 'ASC',   
+  'date_query' => array(
+    array(
+        'after'     => $start,
+        'before'    => $end,
+        'inclusive' => true,
+    ),
+  ),
+);   
+	$query = new WP_Query( $args );
+  //echo '<pre>';
+	//print_r($query);
+	if( $query->have_posts() ) :
+		while( $query->have_posts() ): $query->the_post();
+			echo '<h4>' . $query->post->post_title . '</h4>';
+		endwhile;
+		wp_reset_postdata();
+	else :
+		echo 'No posts found';
+	endif;
+	
+	die();
 }
-add_filter( 'posts_where', 'title_filter', 10, 2 );
-
-remove_filter( 'posts_where', 'title_filter', 10 );
-return $wp_query;
+	} 
 ?>
+
