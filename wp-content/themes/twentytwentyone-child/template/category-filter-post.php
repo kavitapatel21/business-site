@@ -1,9 +1,10 @@
 <?php 
 /**
- * Template Name:   custompost
+ * Template Name:   category-filter-post
  * Template Post Type:post,page,my-post-type;
  */
 ?>
+<!--Filter post with category using chkbox-->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="<?php echo get_stylesheet_directory_uri(); ?>/assets/style.css"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
@@ -12,49 +13,39 @@
 <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script>
-    jQuery(function($){
-	$('#filter').submit(function(){
-		var filter = $('#filter');
-		$.ajax({
-			url:filter.attr('action'),
-			data:filter.serialize(), // form data
-			type:filter.attr('method'), // POST
-			beforeSend:function(xhr){
-				filter.find('button').text('Processing...'); // changing the button label
-			},
-			success:function(data){
-				filter.find('button').text('Apply filter'); // changing the button label back
-				$('#response').html(data); // insert data
-			}
-		});
-		return false;
-	});
-});
-</script>
-<div style="margin-top: 30px;">
-<div align='center'>
-<form class="search" action="<?php bloginfo('url'); ?>/">
-        <input type="search" name="s" placeholder="Search&hellip;">
-        <input type="submit" value="Search">
-        <input type="hidden" name="post_type" value="custom_post">
-</form>
-<form action="<?php echo site_url() ?>/wp-admin/admin-ajax.php" method="POST" id="filter">
-<input type="text" name="startdate" placeholder="startdate" />
-<input type="text" name="enddate" placeholder="enddate" />
-<button>Apply filter</button>
-	<input type="hidden" name="action" value="myfilter">
-</form>
-<div id="response"></div>
 
-</div>
+<form action="<?php echo site_url() ?>/wp-admin/admin-ajax.php" method="POST" id="filter">
+<!--            Cities select filter -->
+        <?php
+   /**if( $terms = get_terms( 'category', 'orderby=name' ) ) : // to make it simple I use default categories
+        echo '<select value ="" name="cityfilter"><option>Select Category</option>';
+        foreach ( $terms as $term ) :
+            echo '<option value="' . $term->term_id . '">' . $term->name . '</option>'; // ID of the category as the value of an option
+        endforeach;
+        echo '</select>';
+    endif;*/?>
+<!--        Categories filter -->
+        <div class="categories-list">
+        <?php 
+          $categories = get_categories(); 
+         // echo '<pre>';
+         // print_r($categories);
+          foreach ($categories as $category) {
+            echo '<input type="checkbox" name="categoryfilter" value="'.$category->cat_ID.'"> '.$category->name.'<br />';
+          }
+        ?>
+        </div>
+            <button class="itenerary-filter">Apply filter</button>
+<input type="hidden" name="action" value="myfilter">
+    </form> 
+    
 <div style="margin-top: 10px;">
 <div class="container blog-page">
     <div class="row clearfix">
 <?php
 
 
-$args = array( 'post_type' => 'custom_post',
+$args = array( 'post_type' => 'post',
           'post_status' => 'publish',
           'posts_per_page' => -1,
           'order'    => 'ASC',      
@@ -94,4 +85,3 @@ $args = array( 'post_type' => 'custom_post',
     </div>
 </div>
 </div>
-

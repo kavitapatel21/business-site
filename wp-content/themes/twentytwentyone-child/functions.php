@@ -1,3 +1,12 @@
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="<?php echo get_stylesheet_directory_uri(); ?>/assets/style.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
+<!-- Font Google -->
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <?php 
 /* Child theme generated with WPS Child Theme Generator */
             
@@ -109,23 +118,22 @@ $.cookie('the_cookie', '', { expires: date ,path :'/' });  // expires after 30 s
 
 <?php
 //fiter post between two dates
-add_action('wp_ajax_myfilter', 'misha_filter_function'); // wp_ajax_{ACTION HERE} 
-add_action('wp_ajax_nopriv_myfilter', 'misha_filter_function');
-
 function misha_filter_function(){
 
 	if( isset( $_POST['startdate'] ) && isset( $_POST['enddate'] ) ) {
     $start=$_POST['startdate'];
     $end=$_POST['enddate'];
-   // echo $start;
+    //$startdate=date( 'Y-m-d H:i:s', strtotime($start) );
+    //$enddate=date( 'Y-m-d H:i:s', strtotime($end) );
+   //echo  $startdate;
     $args = array( 'post_type' => 'custom_post',
   'post_status' => 'publish',
   'posts_per_page' => -1,
   'order'    => 'ASC',   
   'date_query' => array(
     array(
-        'after'     => $start,
-        'before'    => $end,
+        'after'     => sanitize_text_field($start),
+        'before'    => sanitize_text_field($end),
         'inclusive' => true,
     ),
   ),
@@ -145,5 +153,139 @@ function misha_filter_function(){
 	die();
 }
 	} 
+add_action('wp_ajax_myfilter', 'misha_filter_function'); // wp_ajax_{ACTION HERE} 
+add_action('wp_ajax_nopriv_myfilter', 'misha_filter_function');
 ?>
 
+<?php
+//Filter with categories direct chkbox
+function mishaa_filter_function(){
+  ?>
+  <div style="margin-top: 10px;">
+<div class="container blog-page">
+    <div class="row clearfix">
+      <?php
+  $args = array(
+      'orderby' => 'date', // we will sort posts by date
+      'order' => $_POST['date'] // ASC или DESC
+  );
+  
+  if(  !empty( $_POST['categoryfilter']) )
+      $args['tax_query'] = array(
+
+          array(
+              'taxonomy' => 'category',
+              'field' => 'id',
+              'terms' => $_POST['categoryfilter'],
+          ),
+      );
+
+  $query = new WP_Query( $args );
+
+  if( $query->have_posts() ) :
+      while( $query->have_posts() ): $query->the_post();
+      ?>
+      <div class="col-lg-4 col-md-12">
+      <div class="card single_post">            
+          <div class="body">
+              <div class="img-post m-b-15">
+             
+                  <img src="<?php echo get_the_post_thumbnail() ?>">
+              </div>
+              <h4 style="margin-top: 1rem;font-size: 25px;font-weight:700"><?php the_title(); ?></h4>
+              <p style="line-height: 1.3;margin-top: 1.0rem;"><?php echo apply_filters( 'the_content', wp_trim_words( get_the_content(), 30) ); ?></p>
+              <div style="display: flex;justify-content: space-between;">
+              <p style="font-weight: 500;"><?php echo get_the_date( 'Y-m-d' ); ?></p>
+              <button type="button" class="btn btn-secondary btn-circle-sm">
+              <a href="<?php the_permalink();?>">
+              <span class="glyphicon glyphicon-arrow-right"></span>
+              </a>
+              </button>
+          </div>
+          </div>
+      </div>
+  </div>
+<?php
+      endwhile;
+      wp_reset_postdata();
+      ?>
+      </div>
+  </div>
+  </div>
+  <?php
+  else :
+      echo 'No posts found';
+  endif;
+
+  die();
+}
+add_action('wp_ajax_myfilter', 'mishaa_filter_function'); 
+add_action('wp_ajax_nopriv_myfilter', 'mishaa_filter_function');
+?>
+
+
+<?php
+//filter post with dropdown & chkbox
+function mish_filter_function(){
+  ?>
+  <div style="margin-top: 10px;">
+<div class="container blog-page">
+    <div class="row clearfix">
+      <?php
+  $args = array(
+      'orderby' => 'date', // we will sort posts by date
+      'order' => $_POST['date'] // ASC или DESC
+  );
+ 
+  if( isset( $_POST['categorySelect'] ))
+      $args['tax_query'] = array(
+          
+          array(
+              'taxonomy' => 'category',
+              'field' => 'id',
+              'terms' => $_POST['categorySelect']
+          ),
+      );
+
+  $query = new WP_Query( $args );
+
+  if( $query->have_posts() ) :
+    while( $query->have_posts() ): $query->the_post();
+    ?>
+    <div class="col-lg-4 col-md-12">
+    <div class="card single_post">            
+        <div class="body">
+            <div class="img-post m-b-15">
+           
+                <img src="<?php echo get_the_post_thumbnail() ?>">
+            </div>
+            <h4 style="margin-top: 1rem;font-size: 25px;font-weight:700"><?php the_title(); ?></h4>
+            <p style="line-height: 1.3;margin-top: 1.0rem;"><?php echo apply_filters( 'the_content', wp_trim_words( get_the_content(), 30) ); ?></p>
+            <div style="display: flex;justify-content: space-between;">
+            <p style="font-weight: 500;"><?php echo get_the_date( 'Y-m-d' ); ?></p>
+            <button type="button" class="btn btn-secondary btn-circle-sm">
+            <a href="<?php the_permalink();?>">
+            <span class="glyphicon glyphicon-arrow-right"></span>
+            </a>
+            </button>
+        </div>
+        </div>
+    </div>
+</div>
+<?php
+    endwhile;
+    wp_reset_postdata();
+    ?>
+    </div>
+</div>
+</div>
+<?php
+  else :
+      echo 'No posts found';
+  endif;
+
+  die();
+}
+add_action('wp_ajax_postfilter', 'mish_filter_function'); 
+add_action('wp_ajax_nopriv_postfilter', 'mish_filter_function');
+?>
