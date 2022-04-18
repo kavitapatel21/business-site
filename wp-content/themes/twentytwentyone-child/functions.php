@@ -1,12 +1,4 @@
-
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="<?php echo get_stylesheet_directory_uri(); ?>/assets/style.css"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
-<!-- Font Google -->
-<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <?php 
 /* Child theme generated with WPS Child Theme Generator */
             
@@ -76,85 +68,102 @@ function save_posted_data( $posted_data ) {
 add_filter( 'wpcf7_posted_data', 'save_posted_data' );
 ?>
 
-<?php
-add_action( 'init', 'my_setcookie' );
-function my_setcookie() {
-  //pop up model shows only once a day
-//setcookie( 'my-name', '1', time() + 3600, COOKIEPATH, COOKIE_DOMAIN   );
-}
-/**add_action( 'wp_head', 'my_getcookie' );
-function my_getcookie() {
-$alert = isset( $_COOKIE['my-name'] ) ? $_COOKIE['my-name'] : 'not set';
- echo "<script type='text/javascript'>alert('$alert')</script>";
-}*/
 
-add_action( 'wp_footer', 'showpanel' );
-function showpanel() {
-    ?>
-    <script>
-    $(document).ready(function(){
-      //  alert('call');
-    var value=$.cookie("the_cookie");
-    if(value == null){
-        //alert('hi');
-        $('#myModal').modal('show');
+
+<?php
+// add the ajax fetch js
+add_action( 'wp_footer', 'ajax_fetch' );
+function ajax_fetch() {
+?>
+	<script type="text/javascript">
+	jQuery('input[name="apply_filter"]').on('click', function(){
+
+	    jQuery.ajax({
+	        url: '<?php echo admin_url('admin-ajax.php'); ?>',
+	        type: 'post',
+	        data: { 
+	        	action: 'data_fetch', 
+	        	keyword: jQuery('#keyword').val(),
+	        	first_date: jQuery('#first_date').val(),
+	        	second_date: jQuery('#second_date').val(),
+	        },
+	        success: function(data) {
+	            jQuery('#datafetch').html( data );
+	        }
+	    });
+
+	});
+	
+	</script>
+
+<?php
+}
+
+// the ajax function
+add_action('wp_ajax_data_fetch' , 'data_fetch');
+add_action('wp_ajax_nopriv_data_fetch','data_fetch');
+function data_fetch(){
+
+	/*'date_query' => array(
+        array(
+            'after'     => date('2022-01-02 00:00:00'),
+            'before'    => date('2022-01-13 00:00:00'),
+            'inclusive' => true,
+        ),
+    ), */
+
+    $first_date = $_POST['first_date'];
+    $second_date = $_POST['second_date'];
+
+   // echo $first_date;
+   // echo "<br>";
+   // echo $second_date;
+   // echo "<br>";
+
+    if (!empty($_POST['first_date']) && !empty($_POST['second_date']) ) {
+    	//echo "string";
+	    $the_query = new WP_Query( 
+	    	array( 
+	    		'posts_per_page' => -1, 
+	    		's' => esc_attr( $_POST['keyword'] ), 
+	    		'post_type' => 'custom_post',
+	    		'date_query' => array(
+			        array(
+			            'after'     => $first_date,
+			            'before'    => $second_date,
+			            'inclusive' => true,
+			        ),
+			    )
+	    	) 
+	    );
+     
+
+    	
+    }else{
+    	//echo "121s";
+	    $the_query = new WP_Query( 
+	    	array( 
+	    		'posts_per_page' => -1, 
+	    		's' => esc_attr( $_POST['keyword'] ), 
+	    		'post_type' => 'post',
+	    	) 
+	    );
 
     }
-   /**  $.cookie('the_cookie', 'true', { expires: 1 ,path :'/'});
-    var now = new Date();
-  var time = now.getTime();
-  var expireTime = time + (24 * 60 * 60 * 1000); //for 1 day
-  now.setTime(expireTime);
-  */
-  var date = new Date();
-date.setTime(date.getTime() + (10 * 1000));
-$.cookie('the_cookie', '', { expires: date ,path :'/' });  // expires after 30 second
-});
-    </script>
 
-<?php
+    if( $the_query->have_posts() ) :
+      while( $the_query->have_posts() ): $the_query->the_post(); ?>
+          
+          <h2><?php the_title();?></h2>
+
+      <?php endwhile;
+      wp_reset_postdata(); 
+  else:
+    echo "No Post Found!"; 
+  endif;
+    
+    die();
 }
-?>
-
-<?php
-//fiter post between two dates
-function misha_filter_function(){
-
-	if( isset( $_POST['startdate'] ) && isset( $_POST['enddate'] ) ) {
-    $start=$_POST['startdate'];
-    $end=$_POST['enddate'];
-    //$startdate=date( 'Y-m-d H:i:s', strtotime($start) );
-    //$enddate=date( 'Y-m-d H:i:s', strtotime($end) );
-   //echo  $startdate;
-    $args = array( 'post_type' => 'custom_post',
-  'post_status' => 'publish',
-  'posts_per_page' => -1,
-  'order'    => 'ASC',   
-  'date_query' => array(
-    array(
-        'after'     => sanitize_text_field($start),
-        'before'    => sanitize_text_field($end),
-        'inclusive' => true,
-    ),
-  ),
-);   
-	$query = new WP_Query( $args );
-  //echo '<pre>';
-	//print_r($query);
-	if( $query->have_posts() ) :
-		while( $query->have_posts() ): $query->the_post();
-			echo '<h4>' . $query->post->post_title . '</h4>';
-		endwhile;
-		wp_reset_postdata();
-	else :
-		echo 'No posts found';
-	endif;
-	
-	die();
-}
-	} 
-add_action('wp_ajax_myfilter', 'misha_filter_function'); // wp_ajax_{ACTION HERE} 
-add_action('wp_ajax_nopriv_myfilter', 'misha_filter_function');
 ?>
 
 <?php
@@ -289,3 +298,50 @@ function mish_filter_function(){
 add_action('wp_ajax_postfilter', 'mish_filter_function'); 
 add_action('wp_ajax_nopriv_postfilter', 'mish_filter_function');
 ?>
+
+<?php
+add_action( 'init', 'my_setcookie' );
+function my_setcookie() {
+  //pop up model shows only once a day
+//setcookie( 'my-name', '1', time() + 3600, COOKIEPATH, COOKIE_DOMAIN   );
+}
+/**add_action( 'wp_head', 'my_getcookie' );
+function my_getcookie() {
+$alert = isset( $_COOKIE['my-name'] ) ? $_COOKIE['my-name'] : 'not set';
+ echo "<script type='text/javascript'>alert('$alert')</script>";
+}*/
+
+add_action( 'wp_footer', 'showpanel' );
+function showpanel() {
+    ?>
+    <script>
+    $(document).ready(function(){
+      //  alert('call');
+    var value=$.cookie("the_cookie");
+    if(value == null){
+        //alert('hi');
+        $('#myModal').modal('show');
+
+    }
+   /**  $.cookie('the_cookie', 'true', { expires: 1 ,path :'/'});
+    var now = new Date();
+  var time = now.getTime();
+  var expireTime = time + (24 * 60 * 60 * 1000); //for 1 day
+  now.setTime(expireTime);
+  */
+  var date = new Date();
+date.setTime(date.getTime() + (10 * 1000));
+$.cookie('the_cookie', '', { expires: date ,path :'/' });  // expires after 30 second
+});
+    </script>
+
+<?php
+}
+?>
+
+
+
+
+
+
+
