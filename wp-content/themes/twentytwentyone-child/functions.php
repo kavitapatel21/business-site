@@ -337,6 +337,7 @@ $.cookie('the_cookie', '', { expires: date ,path :'/' });  // expires after 30 s
 
 <?php
 }
+
 ?>
 
 

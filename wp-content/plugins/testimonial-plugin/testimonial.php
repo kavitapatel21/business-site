@@ -110,12 +110,15 @@
 
  */
 
+//require_once( ABSPATH . '/wp-includes/pluggable.php' );
+//$user_info = wp_get_current_user();
 global $jal_db_version;
 $jal_db_version = '1.0';
 
 function jal_install() {
 	global $wpdb;
 	global $jal_db_version;
+ 
 
 	$table_name = $wpdb->prefix . 'testimonial';
 	
@@ -125,7 +128,7 @@ function jal_install() {
 		id mediumint(9) NOT NULL AUTO_INCREMENT,
 		name tinytext NOT NULL,
 		content text NOT NULL,
-		img varchar(55) DEFAULT '' NOT NULL,
+		img longtext NOT NULL,
 		PRIMARY KEY  (id)
 	) $charset_collate;";
 
@@ -137,18 +140,37 @@ function jal_install() {
 
 function jal_install_data() {
 	global $wpdb;
+  $ids = get_posts( 
+    array(
+        'post_type'      => 'attachment', 
+        'post_mime_type' => 'image', 
+        'post_status'    => 'inherit', 
+        'posts_per_page' => -1,
+        'fields'         => 'ids',
+    ) 
+);
+$images = array();
+foreach ( $ids as $id )
+    $images[]= $id;
+
+$one= $images[0] ;
+$two= $images[1] ;
+$three=$images[2] ;
+echo $one;
+echo $two;
+echo $three;
+
+ // $a=wp_get_attachment_url( 153);
     ?>
-    <form name="foo" method="post" enctype="multipart/form-data">
-    <input type="file" value="images/avatar3.png">
-</form>
+
 	<?php
 	$all_items = array(
 
-        array( 'name' => 'test', 'content' => 'Congratulations, you just completed the installation!', 'img' => '4' ), 
+        array( 'name' => 'test', 'content' => 'Congratulations, you just completed the installation!', 'img' =>  $one  ), 
       
-        array( 'name' => 'testone', 'content' => 'Congratulations, you just completed the installation!', 'img' => '5' ), 
+        array( 'name' => 'testone', 'content' => 'Congratulations, you just completed the installation!', 'img' => $two ), 
       
-        array( 'name' => 'testtwo', 'content' => 'Congratulations, you just completed the installation!', 'img' => '6' ),  
+        array( 'name' => 'testtwo', 'content' => 'Congratulations, you just completed the installation!', 'img' => $three ),  
       
       );
 
@@ -178,6 +200,7 @@ function my_plugin_remove_database() {
      delete_option("my_plugin_db_version");
 }   
 
+//display testimonial on frontend
 function display_data(){
     global $wpdb;
 ?>
@@ -188,17 +211,25 @@ function display_data(){
           <?php
     $userTable =$wpdb->prefix."testimonial";
     $rows = $wpdb->get_results("SELECT * FROM $userTable"); 
-   // echo '<pre>';
-    //print_r($rows);
+    //echo '<pre>';
+  //print_r($rows);
     $array = json_decode(json_encode( $rows), true);
     foreach (  $array as $row ) {
         $name=$row['name'];
         $content=$row['content'];
-        $img=$row['img'];
+        $img_id=$row['img'];
+        $image_thumb = wp_get_attachment_image_src($img_id, 'thumbnail');
+ 
+        // display the image
+        $url= $image_thumb[0];
+       // echo $url;
+       // echo $imgid;
+       // echo wp_get_attachment_image_src( $imgid);
+        //echo $img;
         ?>
         <div class="testimonial">
             <div class="pic">
-              <img src="https://images.pexels.com/photos/638700/pexels-photo-638700.jpeg?w=940&h=650&auto=compress&cs=tinysrgb">
+              <img src="<?php echo $url; ?>">
             </div>
             <p class="description"><?php echo $content ?></p>
             <h3 class="title"><?php echo $name; ?></h3>
@@ -210,7 +241,324 @@ function display_data(){
 </div>
 <?php }
 add_shortcode('show_data','display_data');
+
+
+//add menu on dashboard
+add_action('admin_menu', 'at_try_menu');
+function at_try_menu() {
+    //adding plugin in menu
+    add_menu_page('employee_list', //page title
+        'Employee Listing', //menu title
+        'manage_options', //capabilities
+        'Employee_Listing', //menu slug
+        'employee_list' //function
+    );
+    //adding submenu to a menu
+    add_submenu_page('Employee_Listing',//parent page slug
+        'employee_insert',//page title
+        'Employee Insert',//menu titel
+        'manage_options',//manage optios
+        'Employee_Insert',//slug
+        'employee_insert'//function
+    );
+    add_submenu_page( null,//parent page slug
+        'employee_update',//$page_title
+        'Employee Update',// $menu_title
+        'manage_options',// $capability
+        'Employee_Update',// $menu_slug,
+        'employee_update'// $function
+    );
+    add_submenu_page( null,//parent page slug
+        'employee_delete',//$page_title
+        'Employee Delete',// $menu_title
+        'manage_options',// $capability
+        'Employee_Delete',// $menu_slug,
+        'employee_delete'// $function
+    );
+}
+
+//listing data
+function employee_list() {
+    ?>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+        table, td, th {
+            border: 1px solid black;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+    <div class="wrap">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Content</th>
+                <th>img</th>
+                <th colspan="3">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'testimonial';
+            $rows = $wpdb->get_results("SELECT * from $table_name");
+            //$rowcount = $wpdb->num_rows;
+           // echo $rowcount;
+            $employees= json_decode(json_encode( $rows), true);
+            foreach ($employees as $employee) {
+              $img_id=$employee['img'];
+              $image_thumb = wp_get_attachment_image_src($img_id, 'thumbnail');
+              // display the image
+            
+              $id = $employee['id'];
+              $name = $employee['name'];
+              $content = $employee['content'];
+              $url= $image_thumb[0];
+              ?>
+                <tr>
+                    <td><?php echo  $id; ?></td>
+                    <td><?php echo $name; ?></td>
+                    <td><?php echo  $content; ?></td>
+                    <td> <img src="<?php echo $url; ?>"></td>
+                    <td><a href="<?php echo admin_url('admin.php?page=Employee_Insert&id=' . $employee['id']);?>">Add</a> </td>
+                    <td><a href="<?php echo admin_url('admin.php?page=Employee_Update&id=' . $employee['id']); ?>">Edit</a> </td>
+                    <td><a href="<?php echo admin_url('admin.php?page=Employee_Delete&id=' . $employee['id']); ?>"> Delete</a></td>
+                </tr>
+            <?php }
+            } 
+            
+            
+//insert data
+
+function employee_insert()
+{
+    //echo "insert page";
+    ?>
+<table>
+    <thead>
+    <tr>
+        <th></th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <form name="frm" action="#" method="post" enctype='multipart/form-data'>
+    <tr>
+        <td>Name:</td>
+        <td><input type="text" name="nm"></td>
+    </tr>
+    <tr>
+        <td>Content:</td>
+        <td><input type="text" name="adrs"></td>
+    </tr>
+    <tr>
+        <td>Image:</td>
+        <td>
+        <input type="file" id="fileToUpload" name="fileToUpload"></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><input type="submit" value="Insert" name="ins"></td>
+    </tr>
+    </form>
+    </tbody>
+</table>
+<?php
+    if(isset($_POST['ins'])){
+        global $wpdb;
+        $nm=$_POST['nm'];
+        $ad=$_POST['adrs'];
+        //$m=$_POST['file'];
+       /* $target_dir = "D:/wamp64/www/business/wp-content/plugins/testimonial-plugin/upload/";
+        $target_file = $target_dir . basename($_FILES["imageUpload"]["name"]);
+        $uploadOk = 1;
+        $imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
+    
+        if (move_uploaded_file($_FILES["imageUpload"]["tmp_name"], $target_file)) {
+            echo "The file ". basename( $_FILES["imageUpload"]["name"]). " has been uploaded.";
+        } else {
+            echo "Sorry, there was an error uploading your file.";
+        }
+
+    $image=basename( $_FILES["imageUpload"]["name"]); // used to store the filename in a variable
+    echo $image; */
+
+
+    //Add image in to wordpress media library from input type
+    $file_name = $_FILES['fileToUpload']['name'];
+    $file_temp = $_FILES['fileToUpload']['tmp_name'];
+
+    $upload_dir = wp_upload_dir();
+    $image_data = file_get_contents( $file_temp );
+    $filename = basename( $file_name );
+    $filetype = wp_check_filetype($file_name);
+    $filename = time().'.'.$filetype['ext'];
+
+    if ( wp_mkdir_p( $upload_dir['path'] ) ) {
+      $file = $upload_dir['path'] . '/' . $filename;
+    }
+    else {
+      $file = $upload_dir['basedir'] . '/' . $filename;
+    }
+
+    file_put_contents( $file, $image_data );
+    $wp_filetype = wp_check_filetype( $filename, null );
+    $attachment = array(
+      'post_mime_type' => $wp_filetype['type'],
+      'post_title' => sanitize_file_name( $filename ),
+      'post_content' => '',
+      'post_status' => 'inherit'
+    );
+
+    $attach_id = wp_insert_attachment( $attachment, $file );
+    require_once( ABSPATH . 'wp-admin/includes/image.php' );
+    $attach_data = wp_generate_attachment_metadata( $attach_id, $file );
+    wp_update_attachment_metadata( $attach_id, $attach_data );
+
+   // echo $attach_id;
+
+        $table_name = $wpdb->prefix . 'testimonial';
+       // Insert record
+        $insert_sql = "INSERT INTO ".$table_name."(name,content,img) values('".$nm."','".$ad."','".  $attach_id."') ";
+       $wpdb->query($insert_sql);
+        echo "inserted";
+    ?>
+        <script type="text/javascript">
+       window.location = "http://localhost/business/wp-admin/admin.php?page=Employee_Listing";
+        </script>
+        <?php
+    }
+  }
+
+
+
+//echo "update page";
+function employee_update(){
+  //echo "update page in";
+  $i=$_GET['id'];
+  global $wpdb;
+  $table_name = $wpdb->prefix . 'testimonial';
+  $employees = $wpdb->get_results("SELECT * from $table_name where id=$i");
+  echo $employees[0]->id;
+  ?>
+  <table>
+      <thead>
+      <tr>
+          <th></th>
+          <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <form name="frm" action="#" method="post" enctype='multipart/form-data'>
+          <input type="hidden" name="id" value="<?= $employees[0]->id; ?>">
+          <tr>
+              <td>Name:</td>
+              <td><input type="text" name="nm" value="<?= $employees[0]->name; ?>"></td>
+          </tr>
+          <tr>
+              <td>Content:</td>
+              <td><input type="text" name="adrs" value="<?= $employees[0]->content; ?>"></td>
+          </tr>
+          <tr>
+        <td>Image:</td>
+        <td>
+        <input type="file" id="fileToUpload" name="fileToUpload"></td>
+    </tr>
+          <tr>
+              <td></td>
+              <td><input type="submit" value="Update" name="upd"></td>
+          </tr>
+      </form>
+      </tbody>
+  </table>
+  <?php
+}
+if(isset($_POST['upd']))
+{
+  global $wpdb;
+  $table_name=$wpdb->prefix.'testimonial';
+  $id=$_POST['id'];
+  $nm=$_POST['nm'];
+  $ad=$_POST['adrs'];
+   //Add image in to wordpress media library from input type
+   $file_name = $_FILES['fileToUpload']['name'];
+   $file_temp = $_FILES['fileToUpload']['tmp_name'];
+
+   $upload_dir = wp_upload_dir();
+   $image_data = file_get_contents( $file_temp );
+   $filename = basename( $file_name );
+   $filetype = wp_check_filetype_and_ext( $file_name, $mimes = null ) ;
+   $filename = time().'.'.$filetype['ext'];
+
+   if ( wp_mkdir_p( $upload_dir['path'] ) ) {
+     $file = $upload_dir['path'] . '/' . $filename;
+   }
+   else {
+     $file = $upload_dir['basedir'] . '/' . $filename;
+   }
+
+   file_put_contents( $file, $image_data );
+   $wp_filetype = wp_check_filetype( $filename, null );
+   $attachment = array(
+     'post_mime_type' => $wp_filetype['type'],
+     'post_title' => sanitize_file_name( $filename ),
+     'post_content' => '',
+     'post_status' => 'inherit'
+   );
+
+   $attach_id = wp_insert_attachment( $attachment, $file );
+   require_once( ABSPATH . 'wp-admin/includes/image.php' );
+   $attach_data = wp_generate_attachment_metadata( $attach_id, $file );
+   wp_update_attachment_metadata( $attach_id, $attach_data );
+
+  // echo $attach_id;
+  $m=$_POST['file'];
+  $wpdb->update(
+      $table_name,
+      array(
+          'name'=>$nm,
+          'content'=>$ad,
+          'img'=>$m
+      ),
+      array(
+          'id'=>$id
+      )
+  );
+  ?>
+  <script type="text/javascript">
+window.location = "http://localhost/business/wp-admin/admin.php?page=Employee_Listing";
+</script> );
+<?php }
+
+
+//echo "employee delete";
+function employee_delete(){
+  echo "employee delete";
+  if(isset($_GET['id'])){
+      global $wpdb;
+      $table_name=$wpdb->prefix.'testimonial';
+      $i=$_GET['id'];
+      $wpdb->delete(
+          $table_name,
+          array('id'=>$i)
+      );
+      echo "deleted";
+  }
+  ?>
+  <script type="text/javascript">
+window.location = "http://localhost/business/wp-admin/admin.php?page=Employee_Listing";
+</script> );
+<?php
+}
 ?>
+
+
+          
+
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.js"></script>
 
