@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.theme.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <style>
   
 .testimonial {
@@ -372,39 +373,20 @@ function employee_insert()
         global $wpdb;
         $nm=$_POST['nm'];
         $ad=$_POST['adrs'];
-        //$m=$_POST['file'];
-       /* $target_dir = "D:/wamp64/www/business/wp-content/plugins/testimonial-plugin/upload/";
-        $target_file = $target_dir . basename($_FILES["imageUpload"]["name"]);
-        $uploadOk = 1;
-        $imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
-    
-        if (move_uploaded_file($_FILES["imageUpload"]["tmp_name"], $target_file)) {
-            echo "The file ". basename( $_FILES["imageUpload"]["name"]). " has been uploaded.";
-        } else {
-            echo "Sorry, there was an error uploading your file.";
-        }
-
-    $image=basename( $_FILES["imageUpload"]["name"]); // used to store the filename in a variable
-    echo $image; */
-
-
     //Add image in to wordpress media library from input type
     $file_name = $_FILES['fileToUpload']['name'];
     $file_temp = $_FILES['fileToUpload']['tmp_name'];
-
     $upload_dir = wp_upload_dir();
     $image_data = file_get_contents( $file_temp );
     $filename = basename( $file_name );
     $filetype = wp_check_filetype($file_name);
     $filename = time().'.'.$filetype['ext'];
-
     if ( wp_mkdir_p( $upload_dir['path'] ) ) {
       $file = $upload_dir['path'] . '/' . $filename;
     }
     else {
       $file = $upload_dir['basedir'] . '/' . $filename;
     }
-
     file_put_contents( $file, $image_data );
     $wp_filetype = wp_check_filetype( $filename, null );
     $attachment = array(
@@ -428,7 +410,7 @@ function employee_insert()
         echo "inserted";
     ?>
         <script type="text/javascript">
-       window.location = "http://localhost/business/wp-admin/admin.php?page=Employee_Listing";
+       window.location = "admin.php?page=Employee_Listing";
         </script>
         <?php
     }
@@ -439,11 +421,18 @@ function employee_insert()
 //echo "update page";
 function employee_update(){
   //echo "update page in";
+ 
   $i=$_GET['id'];
   global $wpdb;
   $table_name = $wpdb->prefix . 'testimonial';
   $employees = $wpdb->get_results("SELECT * from $table_name where id=$i");
-  echo $employees[0]->id;
+ // echo $employees[0]->id;
+  $img_id=$employees[0]->img;
+  $image_thumb = wp_get_attachment_image_src($img_id, 'thumbnail');
+  // display the image
+  $url= $image_thumb[0];
+// $imgname=basename( $url);
+ //echo $imgname;
   ?>
   <table>
       <thead>
@@ -466,7 +455,8 @@ function employee_update(){
           <tr>
         <td>Image:</td>
         <td>
-        <input type="file" id="fileToUpload" name="fileToUpload"></td>
+        <input type="file" id="fileToUpload" name="fileToUpload">
+      <input type=hidden name="hiddenField" id="hiddenField" value="<?php echo $img_id?>"></td>
     </tr>
           <tr>
               <td></td>
@@ -476,63 +466,69 @@ function employee_update(){
       </tbody>
   </table>
   <?php
-}
+  
+  
+  
 if(isset($_POST['upd']))
 {
+  
   global $wpdb;
   $table_name=$wpdb->prefix.'testimonial';
   $id=$_POST['id'];
   $nm=$_POST['nm'];
   $ad=$_POST['adrs'];
-   //Add image in to wordpress media library from input type
-   $file_name = $_FILES['fileToUpload']['name'];
-   $file_temp = $_FILES['fileToUpload']['tmp_name'];
-
-   $upload_dir = wp_upload_dir();
-   $image_data = file_get_contents( $file_temp );
-   $filename = basename( $file_name );
-   $filetype = wp_check_filetype_and_ext( $file_name, $mimes = null ) ;
-   $filename = time().'.'.$filetype['ext'];
-
-   if ( wp_mkdir_p( $upload_dir['path'] ) ) {
-     $file = $upload_dir['path'] . '/' . $filename;
-   }
-   else {
-     $file = $upload_dir['basedir'] . '/' . $filename;
-   }
-
-   file_put_contents( $file, $image_data );
-   $wp_filetype = wp_check_filetype( $filename, null );
-   $attachment = array(
-     'post_mime_type' => $wp_filetype['type'],
-     'post_title' => sanitize_file_name( $filename ),
-     'post_content' => '',
-     'post_status' => 'inherit'
-   );
-
-   $attach_id = wp_insert_attachment( $attachment, $file );
-   require_once( ABSPATH . 'wp-admin/includes/image.php' );
-   $attach_data = wp_generate_attachment_metadata( $attach_id, $file );
-   wp_update_attachment_metadata( $attach_id, $attach_data );
-
-  // echo $attach_id;
-  $m=$_POST['file'];
+  //echo $_POST['hiddenField'];
+  if($_FILES['fileToUpload']['name']=='')
+  { 
+  $m=$_POST['hiddenField'];
+  }
+  else{
+    $file_name = $_FILES['fileToUpload']['name'];
+    $file_temp = $_FILES['fileToUpload']['tmp_name'];
+    $upload_dir = wp_upload_dir();
+      $image_data = file_get_contents( $file_temp );
+      $filename = basename( $file_name );
+      $filetype = wp_check_filetype($file_name);
+      $filename = time().'.'.$filetype['ext'];
+      if ( wp_mkdir_p( $upload_dir['path'] ) ) {
+        $file = $upload_dir['path'] . '/' . $filename;
+      }
+      else {
+        $file = $upload_dir['basedir'] . '/' . $filename;
+      }
+      file_put_contents( $file, $image_data );
+      $wp_filetype = wp_check_filetype( $filename, null );
+      $attachment = array(
+        'post_mime_type' => $wp_filetype['type'],
+        'post_title' => sanitize_file_name( $filename ),
+        'post_content' => '',
+        'post_status' => 'inherit'
+      );
+    
+      $attach_id = wp_insert_attachment( $attachment, $file );
+      require_once( ABSPATH . 'wp-admin/includes/image.php' );
+      $attach_data = wp_generate_attachment_metadata( $attach_id, $file );
+      wp_update_attachment_metadata( $attach_id, $attach_data );
+     $m= $attach_id;
+  }
   $wpdb->update(
       $table_name,
       array(
           'name'=>$nm,
           'content'=>$ad,
-          'img'=>$m
+          'img'=> $m
       ),
       array(
           'id'=>$id
       )
   );
+ // header('Location:admin.php?page=Employee_Listing');
   ?>
   <script type="text/javascript">
-window.location = "http://localhost/business/wp-admin/admin.php?page=Employee_Listing";
-</script> );
+ window.location = "admin.php?page=Employee_Listing";
+</script>
 <?php }
+}
 
 
 //echo "employee delete";
@@ -550,14 +546,11 @@ function employee_delete(){
   }
   ?>
   <script type="text/javascript">
-window.location = "http://localhost/business/wp-admin/admin.php?page=Employee_Listing";
+window.location = "admin.php?page=Employee_Listing";
 </script> );
 <?php
 }
 ?>
-
-
-          
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.js"></script>
