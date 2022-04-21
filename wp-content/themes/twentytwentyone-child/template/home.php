@@ -58,7 +58,9 @@ $postID = $wp_query->post->ID;
         ?>
 
 <!-- End Banner Image --> 
-
+<div align="center">
+<p><?php dynamic_sidebar('custom-widget-area');?></p>
+</div>
 <!-- About -->
 
 <div class="about-us section-padding" data-scroll-index='1'>
