@@ -161,7 +161,7 @@ echo $one;
 echo $two;
 echo $three;
 
- // $a=wp_get_attachment_url( 153);
+ // $a=wp_get_attachment_url( 153);FF
     ?>
 
 	<?php
@@ -201,7 +201,7 @@ function my_plugin_remove_database() {
      delete_option("my_plugin_db_version");
 }   
 
-//display testimonial on frontend
+//display testimonial on frontend using shortcode
 function display_data(){
     global $wpdb;
 ?>

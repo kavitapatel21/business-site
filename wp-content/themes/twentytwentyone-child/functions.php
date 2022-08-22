@@ -12,7 +12,7 @@ if ( ! function_exists( 'b7ectg_theme_enqueue_styles' ) ) {
 }
 
 /*custom logo*/
-add_theme_support( 'custom-logo' );
+//add_theme_support( 'custom-logo' );
 
 function tutsplus_widgets_init() {
  
