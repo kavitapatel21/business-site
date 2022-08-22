@@ -1,5 +1,8 @@
 
 <?php 
+
+//hello
+
 /* Child theme generated with WPS Child Theme Generator */
             
 if ( ! function_exists( 'b7ectg_theme_enqueue_styles' ) ) {            
