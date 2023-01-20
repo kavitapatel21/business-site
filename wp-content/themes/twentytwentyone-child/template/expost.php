@@ -802,7 +802,7 @@
                 },
                 success: function(res) {
                     $('.flex-wrap-wrap').append(res);
-                    if (count_page == page) {
+                    if (jQuery('#count-expage').data('countpage') == page) {
                         $('.btn-load-more').hide();
                     }
                     jQuery('#loader').hide();
@@ -810,4 +810,5 @@
                 }
             });
         });
+        
     </script>

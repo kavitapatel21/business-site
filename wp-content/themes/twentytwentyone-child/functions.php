@@ -505,8 +505,8 @@ function filterexpost()
           'cat' => array($string),
           //'paged' => 1,
         );
-        $loop = new WP_Query($args); ?>
-        <?php while ($loop->have_posts()) : $loop->the_post();
+        $loop = new WP_Query($args);
+        while ($loop->have_posts()) : $loop->the_post();
         ?>
           <div class="col-md-4" id="count-expage" data-countpage="<?php echo $loop->max_num_pages; ?>">
             <div class="highlights-grid-post">

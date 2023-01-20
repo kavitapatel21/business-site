@@ -173,7 +173,6 @@ $( ".cover-bg" ).each(function() {
     nav: false,
     
   });
-
 });
 
 </script>
