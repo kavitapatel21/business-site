@@ -646,7 +646,7 @@
         <?php
         $categories = get_categories();
         foreach ($categories as $category) {
-            echo '<input type="checkbox" name="exspostfilter[]" id="exspostfilter" value="' . $category->cat_ID . '"> ' . $category->name . '<br />';
+            echo '<input type="checkbox" name="exspostfilter" id="exspostfilter" value="' . $category->cat_ID . '"> ' . $category->name . '<br />';
         }
         ?>
     </div>
@@ -680,6 +680,7 @@
                             </div>
                             <div class="latestblog-post-details">
                                 <h3 class="latestblog-post-title">
+
                                     <a href="<?php the_permalink(); ?>"><?php echo the_title(); ?></a>
                                 </h3>
                                 <div class="latestblog-post-author">
@@ -689,7 +690,8 @@
                                                 <img src="https://transdirect.plutustec.in/wp-content/uploads/2022/08/Screen-Shot-2022-08-15-at-10.22.26-am-modified.png" alt="" />
                                             </a>
                                             <p class="latestblog-post-autho-name">
-                                                By<a href=""><?php echo get_field('author'); ?></a>
+                                                <?php $categories = get_the_category(); ?>
+                                                By<a href=""><?php //echo get_field('author'); ?><?php echo $categories[0]->name; ?></a>
                                             </p>
                                         </div>
                                     </div>
@@ -772,7 +774,7 @@
                 },
                 success: function(res) {
                     $('#appendpost').empty().append(res);
-                    $('#allposts').hide();
+                    //$('#allposts').hide();
                     var count_page = jQuery('#count-expage').data('countpage');
                     if (count_page > 1) {
                         $('.btn-load-more').show();

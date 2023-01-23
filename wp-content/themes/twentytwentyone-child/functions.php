@@ -527,7 +527,8 @@ function filterexpost()
                         <img src="https://transdirect.plutustec.in/wp-content/uploads/2022/08/Screen-Shot-2022-08-15-at-10.22.26-am-modified.png" alt="" />
                       </a>
                       <p class="latestblog-post-autho-name">
-                        By<a href=""><?php echo get_field('author'); ?></a>
+                      <?php $categories = get_the_category(); ?>
+                        By<a href=""><?php echo $categories[0]->name; //get_field('author'); ?></a>
                       </p>
                     </div>
                   </div>
@@ -585,7 +586,8 @@ function load_more_exposts()
                   <img src="https://transdirect.plutustec.in/wp-content/uploads/2022/08/Screen-Shot-2022-08-15-at-10.22.26-am-modified.png" alt="" />
                 </a>
                 <p class="latestblog-post-autho-name">
-                  By<a href=""><?php echo get_field('author'); ?></a>
+                <?php $categories = get_the_category(); ?>
+                  By<a href=""><?php echo $categories[0]->name; //get_field('author'); ?></a>
                 </p>
               </div>
             </div>
