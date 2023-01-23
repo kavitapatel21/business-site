@@ -497,107 +497,110 @@ function filterexpost()
   ?>
   <div class="container-custom mb-60">
     <div class="today-highlights">
-      <div class="row flex-wrap-wrap">
-        <?php
-        $args = array(
-          'post_type' => 'custom_post',
-          'posts_per_page' => 3,
-          'cat' => array($string),
-          //'paged' => 1,
-        );
-        $loop = new WP_Query($args);
-        while ($loop->have_posts()) : $loop->the_post();
-        ?>
-          <div class="col-md-4" id="count-expage" data-countpage="<?php echo $loop->max_num_pages; ?>">
-            <div class="highlights-grid-post">
-              <div class="highlights-post-image-wrapper">
-                <a href="">
-                  <?php $url = wp_get_attachment_url(get_post_thumbnail_id($loop->ID)); ?>
-                  <div class="highlights-post-image" style="background-image: url('<?php echo $url; ?>');"></div>
-                </a>
-              </div>
-              <div class="latestblog-post-details">
-                <h3 class="latestblog-post-title">
-                  <a href="<?php the_permalink(); ?>"><?php echo the_title(); ?></a>
-                </h3>
-                <div class="latestblog-post-author">
-                  <div class="latestblog-post-author-section">
-                    <div class="latestblog-post-author-image">
-                      <a href="">
-                        <img src="https://transdirect.plutustec.in/wp-content/uploads/2022/08/Screen-Shot-2022-08-15-at-10.22.26-am-modified.png" alt="" />
-                      </a>
-                      <p class="latestblog-post-autho-name">
-                        By<a href=""><?php echo get_field('author'); ?></a>
-                      </p>
+      <div name="appendpost" id="appendpost">
+        <div class="row flex-wrap-wrap">
+          <?php
+          $args = array(
+            'post_type' => 'custom_post',
+            'posts_per_page' => 3,
+            'cat' => array($string),
+            //'paged' => 1,
+          );
+          $loop = new WP_Query($args);
+          while ($loop->have_posts()) : $loop->the_post();
+          ?>
+            <div class="col-md-4" id="count-expage" data-countpage="<?php echo $loop->max_num_pages; ?>">
+              <div class="highlights-grid-post">
+                <div class="highlights-post-image-wrapper">
+                  <a href="">
+                    <?php $url = wp_get_attachment_url(get_post_thumbnail_id($loop->ID)); ?>
+                    <div class="highlights-post-image" style="background-image: url('<?php echo $url; ?>');"></div>
+                  </a>
+                </div>
+                <div class="latestblog-post-details">
+                  <h3 class="latestblog-post-title">
+                    <a href="<?php the_permalink(); ?>"><?php echo the_title(); ?></a>
+                  </h3>
+                  <div class="latestblog-post-author">
+                    <div class="latestblog-post-author-section">
+                      <div class="latestblog-post-author-image">
+                        <a href="">
+                          <img src="https://transdirect.plutustec.in/wp-content/uploads/2022/08/Screen-Shot-2022-08-15-at-10.22.26-am-modified.png" alt="" />
+                        </a>
+                        <p class="latestblog-post-autho-name">
+                          By<a href=""><?php echo get_field('author'); ?></a>
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div class="latestblog-post-date">
-                    <?php echo get_field('date'); ?>
+                    <div class="latestblog-post-date">
+                      <?php echo get_field('date'); ?>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        <?php endwhile;
-        ?>
-        <?php wp_reset_postdata(); ?>
-        <?php die;
-      }
-      add_action('wp_ajax_expost', 'filterexpost');
-      add_action('wp_ajax_nopriv_expost', 'filterexpost');
+          <?php endwhile;
+          ?>
+          <?php wp_reset_postdata(); ?>
+        </div>
+      </div>
+      <?php die;
+    }
+    add_action('wp_ajax_expost', 'filterexpost');
+    add_action('wp_ajax_nopriv_expost', 'filterexpost');
 
 
-      //Load more expost
-      function load_more_exposts()
-      {
-        $val = $_POST['catid'];
-        $string = implode(', ', $val);
-        $args = array(
-          'post_type' => 'custom_post',
-          'posts_per_page' => 3,
-          'orderby' => 'date',
-          'order' => 'DESC',
-          'cat' => array($string),
-          'paged' => $_POST['page'],
-        );
-        $loop = new WP_Query($args);
-        while ($loop->have_posts()) : $loop->the_post();
-        ?>
-          <div class="col-md-4" id="count-expage" data-countpage="<?php echo $loop->max_num_pages; ?>">
-            <div class="highlights-grid-post">
-              <div class="highlights-post-image-wrapper">
-                <a href="">
-                  <?php $url = wp_get_attachment_url(get_post_thumbnail_id($loop->ID)); ?>
-                  <div class="highlights-post-image" style="background-image: url('<?php echo $url; ?>');"></div>
-                </a>
-              </div>
-              <div class="latestblog-post-details">
-                <h3 class="latestblog-post-title">
-                  <a href=""><?php echo the_title(); ?></a>
-                </h3>
-                <div class="latestblog-post-author">
-                  <div class="latestblog-post-author-section">
-                    <div class="latestblog-post-author-image">
-                      <a href="">
-                        <img src="https://transdirect.plutustec.in/wp-content/uploads/2022/08/Screen-Shot-2022-08-15-at-10.22.26-am-modified.png" alt="" />
-                      </a>
-                      <p class="latestblog-post-autho-name">
-                        By<a href=""><?php echo get_field('author'); ?></a>
-                      </p>
-                    </div>
-                  </div>
-                  <div class="latestblog-post-date">
-                    <?php echo get_field('date'); ?>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        <?php endwhile;
-        ?>
-      <?php wp_reset_postdata();
-        exit;
-      }
-      add_action('wp_ajax_load_expost', 'load_more_exposts');
-      add_action('wp_ajax_nopriv_load_expost', 'load_more_exposts');
+    //Load more expost
+    function load_more_exposts()
+    {
+      $val = $_POST['catid'];
+      $string = implode(', ', $val);
+      $args = array(
+        'post_type' => 'custom_post',
+        'posts_per_page' => 3,
+        'orderby' => 'date',
+        'order' => 'DESC',
+        'cat' => array($string),
+        'paged' => $_POST['page'],
+      );
+      $loop = new WP_Query($args);
+      while ($loop->have_posts()) : $loop->the_post();
       ?>
+        <div class="col-md-4" id="count-expage" data-countpage="<?php echo $loop->max_num_pages; ?>">
+          <div class="highlights-grid-post">
+            <div class="highlights-post-image-wrapper">
+              <a href="">
+                <?php $url = wp_get_attachment_url(get_post_thumbnail_id($loop->ID)); ?>
+                <div class="highlights-post-image" style="background-image: url('<?php echo $url; ?>');"></div>
+              </a>
+            </div>
+            <div class="latestblog-post-details">
+              <h3 class="latestblog-post-title">
+                <a href=""><?php echo the_title(); ?></a>
+              </h3>
+              <div class="latestblog-post-author">
+                <div class="latestblog-post-author-section">
+                  <div class="latestblog-post-author-image">
+                    <a href="">
+                      <img src="https://transdirect.plutustec.in/wp-content/uploads/2022/08/Screen-Shot-2022-08-15-at-10.22.26-am-modified.png" alt="" />
+                    </a>
+                    <p class="latestblog-post-autho-name">
+                      By<a href=""><?php echo get_field('author'); ?></a>
+                    </p>
+                  </div>
+                </div>
+                <div class="latestblog-post-date">
+                  <?php echo get_field('date'); ?>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <?php endwhile;
+      ?>
+    <?php wp_reset_postdata();
+      exit;
+    }
+    add_action('wp_ajax_load_expost', 'load_more_exposts');
+    add_action('wp_ajax_nopriv_load_expost', 'load_more_exposts');
+    ?>
