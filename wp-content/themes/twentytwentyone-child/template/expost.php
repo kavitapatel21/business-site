@@ -646,6 +646,7 @@
         <?php
         $categories = get_categories();
         foreach ($categories as $category) {
+
             echo '<input type="checkbox" name="exspostfilter[]" id="exspostfilter" value="' . $category->cat_ID . '"> ' . $category->name . '<br />';
         }
         ?>
@@ -755,9 +756,13 @@
         });*/
 
 
-        //Without filter button (onchecked checkbox)
+        //Without filter button (oncheck checkbox)
         //var ajaxSent;
         $("input:checkbox").change(function() {
+            //if ($(this).is(":checked")) {
+            /**   if(ajaxSent){
+               ajaxSent.abort();
+            } */
             var filval = [];
             page = 2;
             $("input[type=checkbox]:checked").each(function() {
@@ -776,11 +781,16 @@
                     var count_page = jQuery('#count-expage').data('countpage');
                     if (count_page > 1) {
                         $('.btn-load-more').show();
+                    }else{
+                        $('.btn-load-more').hide();
                     }
                 }
             });
+            //};
         });
 
+
+        //load more post onclick
         var page = 2;
         var count_page = jQuery('#count-expage').data('countpage');
         $('#loadexpost').on('click', function() {
