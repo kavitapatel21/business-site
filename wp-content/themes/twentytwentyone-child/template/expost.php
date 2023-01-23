@@ -646,13 +646,12 @@
         <?php
         $categories = get_categories();
         foreach ($categories as $category) {
-
             echo '<input type="checkbox" name="exspostfilter[]" id="exspostfilter" value="' . $category->cat_ID . '"> ' . $category->name . '<br />';
         }
         ?>
     </div>
     <input type="button" name="expostfilter" id="expostfilter" class="itenerary-filter" value="Apply filter">
-    <input type="hidden" name="action" value="myfilter">
+    <!--<input type="hidden" name="action" value="myfilter">-->
 </form>
 
 
@@ -759,10 +758,6 @@
         //Without filter button (oncheck checkbox)
         //var ajaxSent;
         $("input:checkbox").change(function() {
-            //if ($(this).is(":checked")) {
-            /**   if(ajaxSent){
-               ajaxSent.abort();
-            } */
             var filval = [];
             page = 2;
             $("input[type=checkbox]:checked").each(function() {
@@ -786,7 +781,6 @@
                     }
                 }
             });
-            //};
         });
 
 
